@@ -8,6 +8,22 @@ enum class Direction {
 
 data class Movement(val direction: Direction, val distance: Int)
 
+data class CurrentPosition(val horizontal: Int = 0, val depth: Int = 0, val aim: Int = 0) {
+    fun apply(movement: Movement) = when (movement.direction) {
+        Direction.up -> CurrentPosition(horizontal, depth - movement.distance, aim)
+        Direction.down -> CurrentPosition(horizontal, depth + movement.distance, aim)
+        Direction.forward -> CurrentPosition(horizontal + movement.distance, depth, aim)
+    }
+
+    fun apply2(movement: Movement) = when (movement.direction) {
+        Direction.up -> CurrentPosition(horizontal, depth, aim - movement.distance)
+        Direction.down -> CurrentPosition(horizontal, depth, aim + movement.distance)
+        Direction.forward -> CurrentPosition(horizontal + movement.distance, depth + (aim * movement.distance), aim)
+    }
+
+    fun depthTimesHorizontal() = horizontal * depth
+}
+
 fun String.toMovement(): Movement {
     this.split(" ").let {
         return Movement(Direction.valueOf(it.first()), it.last().toInt())
@@ -15,41 +31,11 @@ fun String.toMovement(): Movement {
 }
 
 class Day02 : BaseDay() {
-
-    var horizontal = 0
-    var depth = 0
-    var aim = 0
-
-    fun runSimulation(moves: List<Movement>): Day02 {
-        moves.forEach { m ->
-            when {
-                m.direction == Direction.forward -> horizontal += m.distance
-                m.direction == Direction.up -> depth -= m.distance
-                m.direction == Direction.down -> depth += m.distance
-            }
-        }
-        return this
-    }
-
-    fun runSimulation2(moves: List<Movement>): Day02 {
-        moves.forEach { m ->
-            when {
-                m.direction == Direction.forward -> {
-                    horizontal += m.distance
-                    depth += aim * m.distance
-                }
-                m.direction == Direction.up -> aim -= m.distance
-                m.direction == Direction.down -> aim += m.distance
-            }
-        }
-        return this
-    }
-
-    fun depthTimesHorizontal() = horizontal * depth
+    fun runSimulation(moves: List<Movement>): CurrentPosition = moves.fold(CurrentPosition()) { acc, next -> acc.apply(next) }
+    fun runSimulation2(moves: List<Movement>): CurrentPosition = moves.fold(CurrentPosition()) { acc, next -> acc.apply2(next) }
 
     fun readInput() =
         readList(this.javaClass.getResourceAsStream("/day02input.txt")!!) { line -> line.toMovement() }
-
 }
 
 fun main() {
