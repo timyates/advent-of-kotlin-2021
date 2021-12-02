@@ -25,8 +25,8 @@ data class CurrentPosition(val horizontal: Int = 0, val depth: Int = 0, val aim:
 }
 
 fun String.toMovement(): Movement {
-    this.split(" ").let {
-        return Movement(Direction.valueOf(it.first()), it.last().toInt())
+    this.split(" ", limit = 2).let { (direction, distance) ->
+        return Movement(Direction.valueOf(direction), distance.toInt())
     }
 }
 
