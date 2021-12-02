@@ -26,4 +26,18 @@ class Day2Spec extends Specification {
         then:
         result == 150
     }
+
+    def "part 2 example works"() {
+        given:
+        def day = new Day02()
+
+        when:
+        def input = use(Day02Kt) {
+            example.collect { it.toMovement() }
+        }
+        def result = day.runSimulation2(input).depthTimesHorizontal()
+
+        then:
+        result == 900
+    }
 }

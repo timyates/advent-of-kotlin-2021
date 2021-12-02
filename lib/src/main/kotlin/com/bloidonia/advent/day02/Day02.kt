@@ -18,6 +18,7 @@ class Day02 : BaseDay() {
 
     var horizontal = 0
     var depth = 0
+    var aim = 0
 
     fun runSimulation(moves: List<Movement>): Day02 {
         moves.forEach { m ->
@@ -25,6 +26,20 @@ class Day02 : BaseDay() {
                 m.direction == Direction.forward -> horizontal += m.distance
                 m.direction == Direction.up -> depth -= m.distance
                 m.direction == Direction.down -> depth += m.distance
+            }
+        }
+        return this
+    }
+
+    fun runSimulation2(moves: List<Movement>): Day02 {
+        moves.forEach { m ->
+            when {
+                m.direction == Direction.forward -> {
+                    horizontal += m.distance
+                    depth += aim * m.distance
+                }
+                m.direction == Direction.up -> aim -= m.distance
+                m.direction == Direction.down -> aim += m.distance
             }
         }
         return this
@@ -41,5 +56,10 @@ fun main() {
     // Part 1
     Day02().apply {
         println(runSimulation(readInput()).depthTimesHorizontal())
+    }
+
+    // Part 2
+    Day02().apply {
+        println(runSimulation2(readInput()).depthTimesHorizontal())
     }
 }
