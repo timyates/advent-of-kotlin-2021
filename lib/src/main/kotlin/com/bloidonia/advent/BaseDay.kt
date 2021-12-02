@@ -1,13 +1,20 @@
 package com.bloidonia.advent
 
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
 import java.io.InputStream
-import kotlin.streams.toList
 
 abstract class BaseDay {
 
-    fun <T> readList(input: InputStream, fn: (String) -> T): List<T> = input
+    fun <T> readFlow(resourceName: String, fn: (String) -> T) = BaseDay::class.java.getResourceAsStream(resourceName)!!
+            .bufferedReader()
+            .lineSequence()
+            .asFlow()
+            .map(fn)
+
+    fun <T> readList(input: InputStream, fn: (String) -> T) = input
         .bufferedReader()
-        .use {
-            it.lines().map(fn).toList()
-        }
+        .lines()
+        .map(fn)
+        .toList()
 }

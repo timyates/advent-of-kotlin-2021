@@ -1,6 +1,8 @@
 package com.bloidonia.advent.day02
 
 import com.bloidonia.advent.BaseDay
+import kotlinx.coroutines.flow.fold
+import kotlinx.coroutines.runBlocking
 
 enum class Direction {
     forward, down, up
@@ -48,4 +50,23 @@ fun main() {
     Day02().apply {
         println(runSimulation2(readInput()).depthTimesHorizontal())
     }
+
+    // Part 1 with FLows
+    runBlocking {
+        val a = Day02()
+            .readFlow("/day02input.txt", String::toMovement)
+            .fold(CurrentPosition()) { acc, next -> acc.apply(next) }
+            .depthTimesHorizontal()
+        println(a)
+    }
+
+    // And part 2
+    runBlocking {
+        val a = Day02()
+            .readFlow("/day02input.txt", String::toMovement)
+            .fold(CurrentPosition()) { acc, next -> acc.apply2(next) }
+            .depthTimesHorizontal()
+        println(a)
+    }
+
 }
