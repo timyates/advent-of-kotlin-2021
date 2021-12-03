@@ -23,7 +23,7 @@ class Day3Spec extends Specification {
         given:
         def input = example.collect {e ->
             use(Day03Kt) {
-                e.toReading2()
+                e.toDiagnostic()
             }
         }
 
@@ -40,7 +40,7 @@ class Day3Spec extends Specification {
         given:
         def input = example.collect {e ->
             use(Day03Kt) {
-                e.toReading2()
+                e.toDiagnostic()
             }
         }
 
