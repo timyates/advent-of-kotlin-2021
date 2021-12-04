@@ -6,10 +6,13 @@ import java.util.regex.Pattern
 data class Square(val number: Int, var seen: Boolean = false)
 data class Board(val grid: List<List<Square>>) {
     val width = grid.first().size
-    val height = grid.size
-    fun unmarkedSum() = grid.flatten().filter { !it.seen }.sumOf { it.number }
-    private fun verticalWin(): Boolean = grid.first().mapIndexed { idx, _ -> grid.all { it[idx].seen } }.any { it }
+
+    private fun transpose() = Board((0 until width).map { index -> grid.map { it[index] } }.toList())
+    private fun verticalWin(): Boolean = transpose().horizontalWin()
     private fun horizontalWin(): Boolean = grid.any { it.all { it.seen } }
+
+    fun unmarkedSum() = grid.flatten().filter { !it.seen }.sumOf { it.number }
+
     fun hasWon() = verticalWin() or horizontalWin()
     fun mark(ball: Int) = grid.flatten().forEach { s -> s.seen = s.seen or (s.number == ball) }
 }
@@ -42,22 +45,20 @@ data class BingoGame(val balls: List<Int>, val boards: List<Board>) {
     }
 }
 
-fun readBoards(input: String): BingoGame {
-    val (balls, boardDef) = input.split("\n", limit = 2)
-
-    val boardList = boardDef.split("\n\n")
-
-    val boards = boardList.map { board ->
-        Board(
-            board.split("\n")
-                .filter { it != "" }
-                .map { line -> line.trim().split(Pattern.compile("\\s+")).map { Square(it.toInt()) } }
-                .toList()
-        )
-    }
-
-    return BingoGame(balls.split(",").map { it.toInt() }, boards)
+fun readBoards(input: String) = input.split("\n", limit = 2).let { (balls, boardDef) ->
+    val boards = boardDef
+        .split("\n\n")
+        .map { board ->
+            Board(
+                board.split("\n")
+                    .filter { it != "" }
+                    .map { line -> line.trim().split(Pattern.compile("\\s+")).map { Square(it.toInt()) } }
+                    .toList()
+            )
+        }
+    BingoGame(balls.split(",").map { it.toInt() }, boards)
 }
+
 
 fun main() {
     println(

@@ -34,7 +34,6 @@ class Day4Spec extends Specification {
         input.balls.size() == 27
         input.boards.size() == 3
         input.boards*.width == [5, 5, 5]
-        input.boards*.height == [5, 5, 5]
     }
 
     def "part 1 example"() {
