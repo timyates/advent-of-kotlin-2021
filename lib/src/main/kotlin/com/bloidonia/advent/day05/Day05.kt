@@ -1,7 +1,11 @@
 package com.bloidonia.advent.day05
 
 import com.bloidonia.advent.readList
+import java.awt.Color
+import java.awt.image.BufferedImage
+import java.io.File
 import java.lang.Math.abs
+import javax.imageio.ImageIO
 
 data class Point(val x: Int, val y: Int) {
     override fun toString(): String = "($x,$y)"
@@ -61,7 +65,24 @@ fun coveragePart2(vents: List<Vent>): Int =
         .filter { it.value > 1 }
         .count()
 
+fun drawForFun(vents: List<Vent>) {
+    val points = vents.flatMap { listOf(it.start, it.end) }
+    val maxX = points.maxOf { it.x }
+    val maxY = points.maxOf { it.y }
+    val buffer = BufferedImage(maxX + 1, maxY + 1, BufferedImage.TYPE_INT_ARGB)
+    buffer.graphics.apply {
+        color = Color.WHITE
+        fillRect(0, 0, maxX + 1, maxY + 1)
+        color = Color.BLACK
+        vents.forEach {
+            drawLine(it.start.x, it.start.y, it.end.x, it.end.y)
+        }
+        ImageIO.write(buffer, "png", File("/tmp/vents.png"))
+    }
+}
+
 fun main() {
     println(coveragePart1(readList("/day05input.txt") { it.toVent() }))
     println(coveragePart2(readList("/day05input.txt") { it.toVent() }))
+    drawForFun(readList("/day05input.txt") { it.toVent() })
 }
