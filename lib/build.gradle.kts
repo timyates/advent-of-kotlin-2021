@@ -1,5 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.0"
+    id("me.champeau.jmh") version "0.6.6"
     `java-library`
     groovy
 }
@@ -26,4 +27,10 @@ testing {
             useSpock("2.0-groovy-3.0")
         }
     }
+}
+
+jmh {
+    warmupIterations.set(2)
+    iterations.set(2)
+    fork.set(2)
 }
