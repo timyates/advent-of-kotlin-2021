@@ -12,16 +12,16 @@ open class Day06Profile {
 
     @Benchmark
     fun original(bh: Blackhole) {
-        bh.consume((1..256).fold(readText("/day06input.txt").toPopulation()) { pop, _ -> pop.generation() }.size())
+        bh.consume(generateSequence(readText("/day06input.txt").toPopulation()) { it.generation() }.drop(256).first().size())
     }
 
     @Benchmark
     fun array(bh: Blackhole) {
-        bh.consume((1..256).fold(readText("/day06input.txt").toArrayPopulation()) { pop, _ -> pop.generation() }.size())
+        bh.consume(generateSequence(readText("/day06input.txt").toArrayPopulation()) { it.generation() }.drop(256).first().size())
     }
 
     @Benchmark
     fun deque(bh: Blackhole) {
-        bh.consume((1..256).fold(readText("/day06input.txt").toDequePopulation()) { pop, _ -> pop.generation() }.size())
+        bh.consume(generateSequence(readText("/day06input.txt").toDequePopulation()) { it.generation() }.drop(256).first().size())
     }
 }
