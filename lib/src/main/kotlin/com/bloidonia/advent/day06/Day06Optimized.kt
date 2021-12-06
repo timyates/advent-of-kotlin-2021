@@ -15,20 +15,20 @@ class ArrayPopulation(private val population: LongArray) {
 fun String.toArrayPopulation() =
     ArrayPopulation(this.split(",").map { it.toInt() }.fold(LongArray(9) { 0L }) { arr, v -> arr[v]++; arr })
 
+// Non-immutable but less CPU intensive
 class DequeuePopulation(private val population: ArrayDeque<Long>) {
-    fun generation() = ArrayDeque(population).run {
-        removeFirst().let {
-            addLast(it)
-            this[6] += it
-            DequeuePopulation(this)
-        }
+    fun generation() = population.removeFirst().let {
+        population.addLast(it)
+        population[6] += it
+        this
     }
 
     fun size() = population.sum()
 }
 
 fun String.toDequeuePopulation() =
-    DequeuePopulation(this.split(",").map { it.toInt() }.fold(ArrayDeque(LongArray(9) { 0L }.toList())) { arr, v -> arr[v]++; arr })
+    DequeuePopulation(this.split(",").map { it.toInt() }
+        .fold(ArrayDeque(LongArray(9) { 0L }.toList())) { arr, v -> arr[v]++; arr })
 
 fun main() {
     // array
@@ -39,11 +39,12 @@ fun main() {
         println(drop(256).first().size())
     }
 
-    // ArrayDequeue
-    val dqInitial = readText("/day06input.txt").toDequeuePopulation()
-
-    generateSequence(dqInitial) { it.generation() }.run {
+    // ArrayDequeue is mutating, so make a new starter each time
+    generateSequence(readText("/day06input.txt").toDequeuePopulation()) { it.generation() }.run {
         println(drop(80).first().size())
+    }
+
+    generateSequence(readText("/day06input.txt").toDequeuePopulation()) { it.generation() }.run {
         println(drop(256).first().size())
     }
 }
