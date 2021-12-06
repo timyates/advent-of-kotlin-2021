@@ -2,25 +2,23 @@ package com.bloidonia.advent.day06
 
 import com.bloidonia.advent.readText
 
-class Pop2(val population: LongArray) {
-    fun generation() = population.take(1).let { birthers ->
-        val newPop = (population.drop(1) + birthers).toTypedArray()
-        newPop[6] += birthers[0]
-        Pop2(newPop.toLongArray())
+class OptimizedPopulation(private val population: LongArray) {
+    fun generation() = (population.copyOfRange(1, 9) + population[0]).let {
+        it[6] += it[8]
+        OptimizedPopulation(it)
     }
+
     fun size() = population.sum()
 }
 
-fun String.toPop2() = Pop2(this.split(",").map { it.toInt() }.fold(LongArray(9) { 0L }) { arr, v -> arr[v]++; arr })
+fun String.toPop2() =
+    OptimizedPopulation(this.split(",").map { it.toInt() }.fold(LongArray(9) { 0L }) { arr, v -> arr[v]++; arr })
 
 fun main() {
-    val pop2 = readText("/day06input.txt").toPop2()
+    val initial = readText("/day06input.txt").toPop2()
 
-    // Part 1
-    val day80pt2 = (1..80).fold(pop2) { pop, _ -> pop.generation() }
-    println(day80pt2.size())
-
-    // Part 2
-    val day256pt2 = (1..256).fold(pop2) { pop, _ -> pop.generation() }
-    println(day256pt2.size())
+    generateSequence(initial) { it.generation() }.run {
+        println(drop(80).first().size())
+        println(drop(256).first().size())
+    }
 }
