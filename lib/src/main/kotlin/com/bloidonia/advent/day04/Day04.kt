@@ -1,6 +1,7 @@
 package com.bloidonia.advent.day04
 
 import com.bloidonia.advent.BaseDay
+import com.bloidonia.advent.readText
 import java.util.regex.Pattern
 
 data class Square(val number: Int, var seen: Boolean = false)
@@ -61,14 +62,6 @@ fun readBoards(input: String) = input.split("\n", limit = 2).let { (balls, board
 
 
 fun main() {
-    println(
-        readBoards(
-            BaseDay::class.java.getResourceAsStream("/day04input.txt")!!.bufferedReader().readText()
-        ).playPart1()
-    )
-    println(
-        readBoards(
-            BaseDay::class.java.getResourceAsStream("/day04input.txt")!!.bufferedReader().readText()
-        ).playPart2()
-    )
+    println(readBoards(readText("/day04input.txt")).playPart1())
+    println(readBoards(readText("/day04input.txt")).playPart2())
 }

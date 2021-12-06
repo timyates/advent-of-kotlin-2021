@@ -4,8 +4,13 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map
 import java.io.InputStream
 
-fun <T> readList(resourceName: String, fn: (String) -> T) = BaseDay::class.java.getResourceAsStream(resourceName)!!
+fun reader(resourceName: String) = BaseDay::class.java.getResourceAsStream(resourceName)!!
     .bufferedReader()
+
+fun readText(resourceName: String) = reader(resourceName)
+    .readText()
+
+fun <T> readList(resourceName: String, fn: (String) -> T) = reader(resourceName)
     .lines()
     .map(fn)
     .toList()
