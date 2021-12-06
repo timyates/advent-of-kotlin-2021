@@ -9,8 +9,8 @@ class Population(val population: Map<Int, Long>) {
             population[age]?.let { popAtAge ->
                 if (age == 0) {
                     // Fish at stage 0 reset to 6 and spawn new fish at 8
-                    nextGeneration[6] = popAtAge + (nextGeneration[6] ?: 0)
-                    nextGeneration[8] = popAtAge + (nextGeneration[8] ?: 0)
+                    nextGeneration[6] = popAtAge
+                    nextGeneration[8] = popAtAge
                 } else {
                     // Otherwise, they just get older
                     nextGeneration[age - 1] = popAtAge + (nextGeneration[age - 1] ?: 0)
