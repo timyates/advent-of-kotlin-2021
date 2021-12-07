@@ -4,7 +4,7 @@ import com.bloidonia.advent.readText
 import kotlin.math.abs
 
 fun integerSumCalc(n: Int) = n * (n + 1) / 2
-fun List<Int>.fuel(target: Int, score: (Int) -> Int = { it }) = this.fold(0) { acc, v -> acc + score.invoke(abs(target - v)) }
+fun List<Int>.fuel(target: Int, score: (Int) -> Int = { it }) = this.sumOf { score.invoke(abs(target - it)) }
 
 fun main() {
     val input = readText("/day07input.txt").split(",").map { it.toInt() }
