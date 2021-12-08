@@ -3,7 +3,11 @@ package com.bloidonia.advent.day08
 import com.bloidonia.advent.readList
 
 data class Digit(val wires: Set<Char>) {
-    fun intersections(other: Digit) = wires.intersect(other.wires).size
+    private fun intersections(vararg other: Digit) = other.map { wires.intersect(it.wires).size }.toList()
+    fun matches(expectedSegmentCount: Int, known: Array<Digit>, expectedOverlap: List<Int>) =
+        !known.contains(this)
+                && this.wires.size == expectedSegmentCount
+                && intersections(known[1], known[4], known[7]) == expectedOverlap
 }
 data class Line(val digits: List<Digit>, val display: List<Digit>) {
     fun numberKnown(): Int = display.count { it.wires.size in listOf(2, 3, 4, 7) }
@@ -13,48 +17,13 @@ data class Line(val digits: List<Digit>, val display: List<Digit>) {
         resolved[4] = digits.first { it.wires.size == 4 }
         resolved[7] = digits.first { it.wires.size == 3 }
         resolved[8] = digits.first { it.wires.size == 7 }
-        resolved[0] = digits.first {
-            !resolved.contains(it)
-                    && it.wires.size == 6
-                    && it.intersections(resolved[1]) == 2
-                    && it.intersections(resolved[4]) == 3
-                    && it.intersections(resolved[7]) == 3
-        }
-        resolved[2] = digits.first {
-            !resolved.contains(it)
-                    && it.wires.size == 5
-                    && it.intersections(resolved[1]) == 1
-                    && it.intersections(resolved[4]) == 2
-                    && it.intersections(resolved[7]) == 2
-        }
-        resolved[3] = digits.first {
-            !resolved.contains(it)
-                    && it.wires.size == 5
-                    && it.intersections(resolved[1]) == 2
-                    && it.intersections(resolved[4]) == 3
-                    && it.intersections(resolved[7]) == 3
-        }
-        resolved[5] = digits.first {
-            !resolved.contains(it)
-                    && it.wires.size == 5
-                    && it.intersections(resolved[1]) == 1
-                    && it.intersections(resolved[4]) == 3
-                    && it.intersections(resolved[7]) == 2
-        }
-        resolved[6] = digits.first {
-            !resolved.contains(it)
-                    && it.wires.size == 6
-                    && it.intersections(resolved[1]) == 1
-                    && it.intersections(resolved[4]) == 3
-                    && it.intersections(resolved[7]) == 2
-        }
-        resolved[9] = digits.first {
-            !resolved.contains(it)
-                    && it.wires.size == 6
-                    && it.intersections(resolved[1]) == 2
-                    && it.intersections(resolved[4]) == 4
-                    && it.intersections(resolved[7]) == 3
-        }
+        resolved[0] = digits.first { it.matches(6, resolved, listOf(2, 3, 3)) }
+        resolved[2] = digits.first { it.matches(5, resolved, listOf(1, 2, 2)) }
+        resolved[3] = digits.first { it.matches(5, resolved, listOf(2, 3, 3)) }
+        resolved[5] = digits.first { it.matches(5, resolved, listOf(1, 3, 2)) }
+        resolved[6] = digits.first { it.matches(6, resolved, listOf(1, 3, 2)) }
+        resolved[9] = digits.first { it.matches(6, resolved, listOf(2, 4, 3)) }
+
         return display.joinToString(separator = "") { resolved.indexOf(it).toString() }
     }
 }
