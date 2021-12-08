@@ -4,11 +4,12 @@ import com.bloidonia.advent.readList
 
 data class Digit(val wires: Set<Char>) {
     private fun intersections(vararg other: Digit) = other.map { wires.intersect(it.wires).size }.toList()
-    fun matches(expectedSegmentCount: Int, known: Array<Digit>, expectedOverlap: List<Int>) =
+    fun matches(expectedSegmentCount: Int, known: Array<Digit>, overlapWith1: Int, overlapWith4: Int) =
         !known.contains(this)
                 && this.wires.size == expectedSegmentCount
-                && intersections(known[1], known[4], known[7]) == expectedOverlap
+                && intersections(known[1], known[4]) == listOf(overlapWith1, overlapWith4)
 }
+
 data class Line(val digits: List<Digit>, val display: List<Digit>) {
     fun numberKnown(): Int = display.count { it.wires.size in listOf(2, 3, 4, 7) }
     fun derive(): String {
@@ -17,13 +18,12 @@ data class Line(val digits: List<Digit>, val display: List<Digit>) {
         resolved[4] = digits.first { it.wires.size == 4 }
         resolved[7] = digits.first { it.wires.size == 3 }
         resolved[8] = digits.first { it.wires.size == 7 }
-        resolved[0] = digits.first { it.matches(6, resolved, listOf(2, 3, 3)) }
-        resolved[2] = digits.first { it.matches(5, resolved, listOf(1, 2, 2)) }
-        resolved[3] = digits.first { it.matches(5, resolved, listOf(2, 3, 3)) }
-        resolved[5] = digits.first { it.matches(5, resolved, listOf(1, 3, 2)) }
-        resolved[6] = digits.first { it.matches(6, resolved, listOf(1, 3, 2)) }
-        resolved[9] = digits.first { it.matches(6, resolved, listOf(2, 4, 3)) }
-
+        resolved[2] = digits.first { it.matches(5, resolved, 1, 2) }
+        resolved[3] = digits.first { it.matches(5, resolved, 2, 3) }
+        resolved[5] = digits.first { it.matches(5, resolved, 1, 3) }
+        resolved[0] = digits.first { it.matches(6, resolved, 2, 3) }
+        resolved[6] = digits.first { it.matches(6, resolved, 1, 3) }
+        resolved[9] = digits.first { it.matches(6, resolved, 2, 4) }
         return display.joinToString(separator = "") { resolved.indexOf(it).toString() }
     }
 }
