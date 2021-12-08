@@ -16,59 +16,44 @@ data class Line(val digits: List<Digit>, val display: List<Digit>) {
         resolved[0] = digits.first {
             !resolved.contains(it)
                     && it.wires.size == 6
-                    && it.wires.containsAll(resolved[1].wires)
-                    && it.wires.containsAll(resolved[7].wires)
+                    && it.intersections(resolved[1]) == 2
                     && it.intersections(resolved[4]) == 3
+                    && it.intersections(resolved[7]) == 3
         }
         resolved[2] = digits.first {
             !resolved.contains(it)
                     && it.wires.size == 5
                     && it.intersections(resolved[1]) == 1
-                    && it.intersections(resolved[7]) == 2
                     && it.intersections(resolved[4]) == 2
-                    && it.intersections(resolved[0]) == 4
+                    && it.intersections(resolved[7]) == 2
         }
         resolved[3] = digits.first {
             !resolved.contains(it)
                     && it.wires.size == 5
                     && it.intersections(resolved[1]) == 2
-                    && it.intersections(resolved[7]) == 3
                     && it.intersections(resolved[4]) == 3
-                    && it.intersections(resolved[0]) == 4
-                    && it.intersections(resolved[2]) == 4
+                    && it.intersections(resolved[7]) == 3
         }
         resolved[5] = digits.first {
             !resolved.contains(it)
                     && it.wires.size == 5
                     && it.intersections(resolved[1]) == 1
-                    && it.intersections(resolved[7]) == 2
                     && it.intersections(resolved[4]) == 3
-                    && it.intersections(resolved[0]) == 4
-                    && it.intersections(resolved[2]) == 3
-                    && it.intersections(resolved[3]) == 4
+                    && it.intersections(resolved[7]) == 2
         }
         resolved[6] = digits.first {
             !resolved.contains(it)
                     && it.wires.size == 6
                     && it.intersections(resolved[1]) == 1
-                    && it.intersections(resolved[7]) == 2
                     && it.intersections(resolved[4]) == 3
-                    && it.intersections(resolved[0]) == 5
-                    && it.intersections(resolved[2]) == 4
-                    && it.intersections(resolved[3]) == 4
-                    && it.intersections(resolved[5]) == 5
+                    && it.intersections(resolved[7]) == 2
         }
         resolved[9] = digits.first {
             !resolved.contains(it)
                     && it.wires.size == 6
                     && it.intersections(resolved[1]) == 2
-                    && it.intersections(resolved[7]) == 3
                     && it.intersections(resolved[4]) == 4
-                    && it.intersections(resolved[0]) == 5
-                    && it.intersections(resolved[2]) == 4
-                    && it.intersections(resolved[3]) == 5
-                    && it.intersections(resolved[5]) == 5
-                    && it.intersections(resolved[6]) == 5
+                    && it.intersections(resolved[7]) == 3
         }
         return display.joinToString(separator = "") { resolved.indexOf(it).toString() }
     }
