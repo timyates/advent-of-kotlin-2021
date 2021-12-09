@@ -10,7 +10,11 @@ fun reader(resourceName: String) = BaseDay::class.java.getResourceAsStream(resou
 fun readText(resourceName: String) = reader(resourceName)
     .readText()
 
-fun <T> readList(resourceName: String, fn: (String) -> T) = reader(resourceName)
+fun readList(resourceName: String): List<String> = reader(resourceName)
+    .lines()
+    .toList()
+
+fun <T> readList(resourceName: String, fn: (String) -> T): List<T> = reader(resourceName)
     .lines()
     .map(fn)
     .toList()

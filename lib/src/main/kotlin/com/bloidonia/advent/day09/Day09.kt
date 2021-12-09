@@ -5,6 +5,7 @@ import com.bloidonia.advent.readList
 data class Point(val x: Int, val y: Int)
 
 data class Cave(val width: Int, val z: IntArray) {
+    private fun p(pt: Point) = p(pt.x, pt.y)
     private fun p(x: Int, y: Int) =
         if (x < 0 || y < 0 || x >= width || y >= z.size / width) Int.MAX_VALUE else z[x + (y * width)]
 
@@ -28,7 +29,7 @@ data class Cave(val width: Int, val z: IntArray) {
                 continue
             }
             seen.add(next)
-            if (p(next.x, next.y) < 9) {
+            if (p(next) < 9) {
                 size++
                 listOfNotNull(
                     if (next.x > 0) Point(next.x - 1, next.y) else null,
@@ -36,20 +37,19 @@ data class Cave(val width: Int, val z: IntArray) {
                     if (next.y > 0) Point(next.x, next.y - 1) else null,
                     if (next.y < z.size / width) Point(next.x, next.y + 1) else null,
                 )
-                    .filter { !seen.contains(it) }
                     .forEach { p -> queue.addLast(p) }
             }
         }
         return size
     }
 
-    fun part1() = minima().sumOf { p(it.x, it.y) + 1 }
-    fun part2() = minima().map { basin(it) }.sortedDescending().take(3).reduce { a, b -> a * b }
+    fun part1() = minima().sumOf { p(it) + 1 }
+    fun part2() = minima().map(::basin).sorted().takeLast(3).reduce { a, b -> a * b }
 }
 
 fun List<String>.toCave() = Cave(first().length, joinToString("").map { "$it".toInt() }.toIntArray())
 
 fun main() {
-    println(readList("/day09input.txt") { it }.toCave().part1())
-    println(readList("/day09input.txt") { it }.toCave().part2())
+    println(readList("/day09input.txt").toCave().part1())
+    println(readList("/day09input.txt").toCave().part2())
 }
