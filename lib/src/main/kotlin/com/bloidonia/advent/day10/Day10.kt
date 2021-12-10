@@ -3,25 +3,25 @@ package com.bloidonia.advent.day10
 import com.bloidonia.advent.readList
 import kotlin.collections.ArrayDeque
 
-fun opener(ch: Char): Char = when (ch) {
-    '}' -> '{'
-    ']' -> '['
+fun opener(ch: Char) = when (ch) {
     ')' -> '('
+    ']' -> '['
+    '}' -> '{'
     else -> '<'
 }
 
-private fun corruptScore(ch: Char): Int = when (ch) {
-    '}' -> 1197
-    ']' -> 57
+private fun corruptScore(ch: Char) = when (ch) {
     ')' -> 3
+    ']' -> 57
+    '}' -> 1197
     else -> 25137
 }
 
-private fun completionScore(ch: Char): Long = when (ch) {
-    '{' -> 3
-    '[' -> 2
-    '(' -> 1
-    else -> 4
+private fun completionScore(ch: Char) = when (ch) {
+    '(' -> 1L
+    '[' -> 2L
+    '{' -> 3L
+    else -> 4L
 }
 
 data class Score(val corrupt: Int, val autoComplete: Long)
@@ -32,8 +32,7 @@ fun String.score(): Score {
         when (ch) {
             '{', '(', '[', '<' -> expected.addFirst(ch)
             else -> {
-                val expectedNextChar = expected.removeFirst()
-                if (expectedNextChar != opener(ch)) {
+                if (expected.removeFirst() != opener(ch)) {
                     return Score(corruptScore(ch), 0)
                 }
             }
