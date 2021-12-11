@@ -27,6 +27,7 @@ data class OctopusGrid(val width: Int, val octopi: List<Octopus>) {
             val next = flashers.removeFirst()
             flashers.addAll(trigger(next))
         }
+        // Reset
         var flashes = 0L
         octopi.forEach {
             if (it.power > 9) {
