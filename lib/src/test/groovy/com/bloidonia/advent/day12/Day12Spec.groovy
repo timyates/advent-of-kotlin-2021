@@ -53,7 +53,7 @@ class Day12Spec extends Specification {
         def caves = use(Day12Kt) { example.parseCaves() }
 
         then:
-        caves.allRoutes(1).size() == 10
+        caves.allRoutes(caves.part1Check).size() == 10
     }
 
     def "larger part1 example"() {
@@ -61,7 +61,7 @@ class Day12Spec extends Specification {
         def caves = use(Day12Kt) { example2.parseCaves() }
 
         then:
-        caves.allRoutes(1).size() == 19
+        caves.allRoutes(caves.part1Check).size() == 19
     }
 
     def "even larger part1 example"() {
@@ -69,7 +69,7 @@ class Day12Spec extends Specification {
         def caves = use(Day12Kt) { example3.parseCaves() }
 
         then:
-        caves.allRoutes(1).size() == 226
+        caves.allRoutes(caves.part1Check).size() == 226
     }
 
     def "small part2 example"() {
@@ -77,22 +77,22 @@ class Day12Spec extends Specification {
         def caves = use(Day12Kt) { example.parseCaves() }
 
         then:
-        caves.part2() == 36
+        caves.allRoutes(caves.part2Check).size() == 36
     }
 
-//    def "larger part2 example"() {
-//        when:
-//        def caves = use(Day12Kt) { example2.parseCaves() }
-//
-//        then:
-//        caves.allRoutes(2).size() == 103
-//    }
-//
-//    def "even larger part2 example"() {
-//        when:
-//        def caves = use(Day12Kt) { example3.parseCaves() }
-//
-//        then:
-//        caves.allRoutes(2).size() == 3509
-//    }
+    def "larger part2 example"() {
+        when:
+        def caves = use(Day12Kt) { example2.parseCaves() }
+
+        then:
+        caves.allRoutes(caves.part2Check).size() == 103
+    }
+
+    def "even larger part2 example"() {
+        when:
+        def caves = use(Day12Kt) { example3.parseCaves() }
+
+        then:
+        caves.allRoutes(caves.part2Check).size() == 3509
+    }
 }
