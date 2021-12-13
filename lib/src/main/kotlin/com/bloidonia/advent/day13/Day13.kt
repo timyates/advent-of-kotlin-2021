@@ -22,15 +22,15 @@ class Day13(val points: List<Point>, val folds: List<Fold>) {
     }
 }
 
-fun String.toDay13() = this.split("\n\n".toPattern(), limit = 2).let { parts ->
+fun String.toDay13() = this.split("\n\n".toPattern(), limit = 2).let { (points, folds) ->
     Day13(
-        parts.first().split("\n").map { it.toPoint() },
-        parts.last().split("\n").map { it.toFold() }
+        points.split("\n").map { it.toPoint() },
+        folds.split("\n").map { it.toFold() }
     )
 }
 
-fun String.toPoint() = this.split(",", limit = 2).let { Point(it.first().toInt(), it.last().toInt()) }
-fun String.toFold() = this.split(" ").last().split("=", limit = 2).let { Fold(it.first(), it.last().toInt()) }
+fun String.toPoint() = this.split(",", limit = 2).let { (x, y) -> Point(x.toInt(), y.toInt()) }
+fun String.toFold() = this.split(" ").last().split("=", limit = 2).let { (axis, pos) -> Fold(axis, pos.toInt()) }
 
 fun main() {
     println(readText("/day13input.txt").toDay13().fold().points.size)
