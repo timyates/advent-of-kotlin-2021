@@ -17,7 +17,7 @@ class Day13(val points: List<Point>, val folds: List<Fold>) {
     fun fold() = Day13(folds.first().fold(points), folds.drop(1))
     override fun toString() = (0..points.maxOf { it.y }).joinToString("\n") { y ->
         (0..points.maxOf { it.x }).joinToString("") { x ->
-            if (points.contains(Point(x, y))) "#" else "."
+            if (points.contains(Point(x, y))) "🟧" else "\uD83D\uDFEB"
         }
     }
 }

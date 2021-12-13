@@ -47,10 +47,10 @@ class Day13Spec extends Specification {
         test.points.size() == 16
 
         and:
-        test.toString() == '''#####
-                             |#...#
-                             |#...#
-                             |#...#
-                             |#####'''.stripMargin()
+        test.toString() == '''🟧🟧🟧🟧🟧
+                             |🟧🟫🟫🟫🟧
+                             |🟧🟫🟫🟫🟧
+                             |🟧🟫🟫🟫🟧
+                             |🟧🟧🟧🟧🟧'''.stripMargin()
     }
 }
