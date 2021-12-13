@@ -4,8 +4,8 @@ import com.bloidonia.advent.readText
 
 data class Point(val x: Int, val y: Int) {
     fun reflect(axis: String, pos: Int) = when (axis) {
-        "x" -> Point(if (x < pos) x else pos - (x - pos), y)
-        else -> Point(x, if (y < pos) y else pos - (y - pos))
+        "x" -> if (x < pos) this else Point(pos - (x - pos), y)
+        else -> if (y < pos) this else Point(x, pos - (y - pos))
     }
 }
 
