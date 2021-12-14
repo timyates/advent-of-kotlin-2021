@@ -2,32 +2,50 @@ package com.bloidonia.advent.day14
 
 import com.bloidonia.advent.readText
 
-class Template(val polymer: List<String>, val insertions: Map<List<String>, List<String>>) {
-    fun insertionFor(pair: List<String>) = insertions.getOrDefault(pair, listOf())
+class Template(
+    private val initialChar: Char,
+    private val polymer: Map<String, Long>,
+    private val insertions: Map<String, List<String>>
+) {
+    fun step(): Template {
+        val next = mutableMapOf<String, Long>()
+        polymer.forEach { entry ->
+            val inserts = insertions[entry.key]
+            if (inserts != null) {
+                inserts.forEach {
+                    next[it] = (next[it] ?: 0L) + entry.value
+                }
+            } else {
+                next[entry.key] = entry.value
+            }
+        }
+        return Template(initialChar, next, insertions)
+    }
 
-    fun step() = Template(
-        polymer.windowed(2)
-            .flatMap { pair -> listOf(pair.first()) + insertionFor(pair) }
-            .toList() + polymer.last(),
-        insertions
-    )
-
-    fun part1() = polymer.groupingBy { it }.eachCount().let { grouped ->
-        grouped.maxOf { it.value } - grouped.minOf { it.value }
+    // Count is the initial char, plus the number of last chars in all the pairs
+    fun count() = buildMap<Char, Long> {
+        put(initialChar, 1L)
+        polymer.forEach { entry ->
+            put(entry.key.last(), getOrDefault(entry.key.last(), 0L) + entry.value)
+        }
+    }.let { map ->
+        map.maxOf { it.value } - map.minOf { it.value }
     }
 }
 
 fun String.parsePolymers() = this.split("\n\n".toPattern(), limit = 2).let { (template, insertions) ->
     Template(
-        template.chunked(1),
-        insertions.split("\n").map { tr ->
+        this.first(),
+        template.windowed(2).groupingBy { it }.eachCount().map { it.key to it.value.toLong() }.toMap(),
+        insertions.split("\n").associate { tr ->
             tr.split(" -> ".toPattern(), limit = 2).let { (src, ins) ->
-                src.chunked(1) to ins.chunked(1)
+                src to listOf(src.first() + ins, ins + src.last())
             }
-        }.toMap()
+        }
     )
 }
 
 fun main() {
-    println(generateSequence(readText("/day14input.txt").parsePolymers()) { it.step() }.drop(10).first().part1())
+    println(generateSequence(readText("/day14input.txt").parsePolymers()) { it.step() }.drop(10).first().count())
+    println(generateSequence(readText("/day14input.txt").parsePolymers()) { it.step() }.drop(40).first().count())
 }

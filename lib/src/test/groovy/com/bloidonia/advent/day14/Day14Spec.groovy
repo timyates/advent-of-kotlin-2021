@@ -24,45 +24,6 @@ class Day14Spec extends Specification {
                     |CC -> N
                     |CN -> C'''.stripMargin()
 
-    def "can parse"() {
-        when:
-        def temp = use(Day14Kt) { example.parsePolymers() }
-
-        then:
-        temp.polymer == ['N', 'N', 'C', 'B']
-        temp.insertions.size() == 16
-
-        temp.insertionFor(['B', 'H']) == ['H']
-        temp.insertionFor(['N', 'O']) == []
-    }
-
-    def "step for part 1"() {
-        when:
-        def temp = use(Day14Kt) { example.parsePolymers() }
-        temp = temp.step()
-
-        then:
-        temp.polymer.join("") == "NCNBCHB"
-
-        when:
-        temp = temp.step()
-
-        then:
-        temp.polymer.join("") == "NBCCNBBBCBHCB"
-
-        when:
-        temp = temp.step()
-
-        then:
-        temp.polymer.join("") == "NBBBCNCCNBBNBNBBCHBHHBCHB"
-
-        when:
-        temp = temp.step()
-
-        then:
-        temp.polymer.join("") == "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB"
-    }
-
     def "part 1"() {
         when:
         def temp = use(Day14Kt) { example.parsePolymers() }
@@ -71,7 +32,18 @@ class Day14Spec extends Specification {
         }
 
         then:
-        temp.part1() == 1588
+        temp.count() == 1588
+    }
+
+    def "part 2"() {
+        when:
+        def temp = use(Day14Kt) { example.parsePolymers() }
+        for (i in 1..40) {
+            temp = temp.step()
+        }
+
+        then:
+        temp.count() == 2188189693529L
     }
 
 }
