@@ -22,7 +22,7 @@ class Cave(private val width: Int, private val costs: IntArray) {
             if (it > 9) it.mod(10) + 1 else it
         }
 
-    private fun distance(start: Position, finish: Position) =
+    private fun guessDistance(start: Position, finish: Position) =
         abs(start.first - finish.first) + abs(start.second - finish.second)
 
     // A* search
@@ -33,7 +33,7 @@ class Cave(private val width: Int, private val costs: IntArray) {
         val done = mutableSetOf<Position>()
 
         val totalCost = mutableMapOf(start to 0)
-        val costGuess = mutableMapOf(start to distance(start, end))
+        val costGuess = mutableMapOf(start to guessDistance(start, end))
         val todo = PriorityQueue<Position>(Comparator.comparingInt { costGuess.getValue(it) }).apply {
             add(start)
         }
@@ -49,7 +49,7 @@ class Cave(private val width: Int, private val costs: IntArray) {
                 val score = totalCost.getValue(currentPos) + cost(neighbour, scale)
                 if (score < totalCost.getOrDefault(neighbour, Int.MAX_VALUE)) {
                     totalCost[neighbour] = score
-                    costGuess[neighbour] = score + distance(neighbour, end)
+                    costGuess[neighbour] = score + guessDistance(neighbour, end)
                     todo.offer(neighbour)
                 }
             }
