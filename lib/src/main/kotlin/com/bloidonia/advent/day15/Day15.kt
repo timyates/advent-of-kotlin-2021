@@ -1,13 +1,12 @@
 package com.bloidonia.advent.day15
 
 import com.bloidonia.advent.readList
+import java.util.PriorityQueue
 import kotlin.math.abs
 
-typealias Cost = Int
 typealias Position = Pair<Int, Int>
 
 operator fun Position.plus(pos: Position) = Position(this.first + pos.first, this.second + pos.second)
-
 
 class Cave(private val width: Int, private val costs: IntArray) {
     private val height by lazy { costs.size / width }
@@ -18,12 +17,12 @@ class Cave(private val width: Int, private val costs: IntArray) {
         if (inCave(pos, scale)) pos.second.mod(height) * width + pos.first.mod(width) else -1
 
     // Costs increment for every repetition of the grid in both x and 9
-    fun cost(pos: Position, scale: Int = 1): Cost =
+    fun cost(pos: Position, scale: Int = 1): Int =
         (costs[offset(pos, scale)] + (pos.first / width) + (pos.second / height)).let {
             if (it > 9) it.mod(10) + 1 else it
         }
 
-    private fun distance(start: Position, finish: Position): Cost {
+    private fun distance(start: Position, finish: Position): Int {
         val dx = abs(start.first - finish.first)
         val dy = abs(start.second - finish.second)
         return (dx + dy) + (-2) * minOf(dx, dy)
@@ -34,26 +33,27 @@ class Cave(private val width: Int, private val costs: IntArray) {
         val start = Position(0, 0)
         val end = Position(width * scale - 1, height * scale - 1)
 
-        val todo = mutableSetOf(start)
         val done = mutableSetOf<Position>()
 
         val totalCost = mutableMapOf(start to 0)
         val costGuess = mutableMapOf(start to distance(start, end))
+        val todo = PriorityQueue<Position>(Comparator.comparingInt { costGuess.getValue(it) }).apply {
+            add(start)
+        }
 
         while (todo.isNotEmpty()) {
-            val currentPos = todo.minByOrNull { costGuess.getValue(it) }!!
+            val currentPos = todo.poll()
 
             if (currentPos == end) return costGuess.getValue(end)
 
-            todo.remove(currentPos)
             done.add(currentPos)
 
             neighbours(currentPos, scale).filterNot { done.contains(it) }.forEach { neighbour ->
                 val score = totalCost.getValue(currentPos) + cost(neighbour, scale)
-                if (score < totalCost.getOrDefault(neighbour, Cost.MAX_VALUE)) {
-                    todo.add(neighbour)
+                if (score < totalCost.getOrDefault(neighbour, Int.MAX_VALUE)) {
                     totalCost[neighbour] = score
                     costGuess[neighbour] = score + distance(neighbour, end)
+                    todo.offer(neighbour)
                 }
             }
         }
