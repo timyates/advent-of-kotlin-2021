@@ -22,11 +22,8 @@ class Cave(private val width: Int, private val costs: IntArray) {
             if (it > 9) it.mod(10) + 1 else it
         }
 
-    private fun distance(start: Position, finish: Position): Int {
-        val dx = abs(start.first - finish.first)
-        val dy = abs(start.second - finish.second)
-        return (dx + dy) + (-2) * minOf(dx, dy)
-    }
+    private fun distance(start: Position, finish: Position) =
+        abs(start.first - finish.first) + abs(start.second - finish.second)
 
     // A* search
     fun search(scale: Int = 1): Int {
