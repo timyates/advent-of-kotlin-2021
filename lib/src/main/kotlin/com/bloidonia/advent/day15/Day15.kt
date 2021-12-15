@@ -3,12 +3,14 @@ package com.bloidonia.advent.day15
 import com.bloidonia.advent.readList
 import kotlin.math.abs
 
+typealias Cost = Int
 typealias Position = Pair<Int, Int>
 
+operator fun Position.plus(pos: Position) = Position(this.first + pos.first, this.second + pos.second)
+
+
 class Cave(private val width: Int, private val costs: IntArray) {
-
-    private val height get() = costs.size / width
-
+    private val height by lazy { costs.size / width }
     private fun inCave(pos: Position, scale: Int = 1) =
         pos.first in 0 until width * scale && pos.second in 0 until height * scale
 
@@ -16,12 +18,12 @@ class Cave(private val width: Int, private val costs: IntArray) {
         if (inCave(pos, scale)) pos.second.mod(height) * width + pos.first.mod(width) else -1
 
     // Costs increment for every repetition of the grid in both x and 9
-    fun cost(pos: Position, scale: Int = 1) =
+    fun cost(pos: Position, scale: Int = 1): Cost =
         (costs[offset(pos, scale)] + (pos.first / width) + (pos.second / height)).let {
             if (it > 9) it.mod(10) + 1 else it
         }
 
-    private fun distance(start: Position, finish: Position): Int {
+    private fun distance(start: Position, finish: Position): Cost {
         val dx = abs(start.first - finish.first)
         val dy = abs(start.second - finish.second)
         return (dx + dy) + (-2) * minOf(dx, dy)
@@ -29,15 +31,16 @@ class Cave(private val width: Int, private val costs: IntArray) {
 
     // A* search
     fun search(scale: Int = 1): Int {
+        val start = Position(0, 0)
         val end = Position(width * scale - 1, height * scale - 1)
 
-        val todo = mutableSetOf(Position(0, 0))
+        val todo = mutableSetOf(start)
         val done = mutableSetOf<Position>()
 
-        val totalCost = mutableMapOf(Position(0, 0) to 0)
-        val costGuess = mutableMapOf(Position(0, 0) to distance(Position(0, 0), end))
+        val totalCost = mutableMapOf(start to 0)
+        val costGuess = mutableMapOf(start to distance(start, end))
 
-        while (todo.size > 0) {
+        while (todo.isNotEmpty()) {
             val currentPos = todo.minByOrNull { costGuess.getValue(it) }!!
 
             if (currentPos == end) return costGuess.getValue(end)
@@ -46,26 +49,21 @@ class Cave(private val width: Int, private val costs: IntArray) {
             done.add(currentPos)
 
             neighbours(currentPos, scale).filterNot { done.contains(it) }.forEach { neighbour ->
-                    val score = totalCost.getValue(currentPos) + cost(neighbour, scale)
-                    if (score < totalCost.getOrDefault(neighbour, Int.MAX_VALUE)) {
-                        if (!todo.contains(neighbour)) {
-                            todo.add(neighbour)
-                        }
-                        totalCost[neighbour] = score
-                        costGuess[neighbour] = score + distance(neighbour, end)
-                    }
+                val score = totalCost.getValue(currentPos) + cost(neighbour, scale)
+                if (score < totalCost.getOrDefault(neighbour, Cost.MAX_VALUE)) {
+                    todo.add(neighbour)
+                    totalCost[neighbour] = score
+                    costGuess[neighbour] = score + distance(neighbour, end)
                 }
+            }
         }
         return -1
     }
 
     // Right, left, down and up neighbors that are still in the cave
     private fun neighbours(position: Position, scale: Int = 1): List<Position> =
-        listOf(Pair(1, 0), Pair(-1, 0), Pair(0, 1), Pair(0, -1)).map {
-            Position(
-                position.first + it.first, position.second + it.second
-            )
-        }.filter { inCave(it, scale) }
+        listOf(Position(1, 0), Position(-1, 0), Position(0, 1), Position(0, -1)).map { position + it }
+            .filter { inCave(it, scale) }
 }
 
 fun List<String>.toCave() = Cave(first().length, joinToString("").map { "$it".toInt() }.toIntArray())
