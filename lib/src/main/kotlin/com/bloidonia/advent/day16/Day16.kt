@@ -25,55 +25,54 @@ class Operator(version: Int, type: Int, private val contents: List<Packet>) : Pa
     }
 }
 
-fun parsePacket(s: String): Pair<Packet, String> {
-    var data = s
-    val takeBits = { n: Int -> data.take(n).apply { data = data.drop(n) } }
+fun Char.toBin(): String = Character.digit(this, 16).toString(2).padStart(4, '0')
+fun String.toBin() = this.flatMap { it.toBin().toCharArray().toList() }
 
-    val version = takeBits(3).toInt(2)
-    val type = takeBits(3).toInt(2)
+fun String.parse(): Packet = ArrayDeque(this.toBin()).let { deque ->
+    fun parsePacket(): Packet {
+        val takeBits = { n: Int -> (0 until n).map { deque.removeFirst() }.joinToString("") }
 
-    if (type == 4) {
-        // it's a literal
-        val sb = StringBuilder()
-        do {
-            val chunk = takeBits(5).apply {
-                sb.append(this.substring(1))
-            }
-        } while (chunk[0] == '1')
+        val version = takeBits(3).toInt(2)
+        val type = takeBits(3).toInt(2)
 
-        return Pair(Literal(version, type, sb.toString().toLong(2)), data)
-    } else {
-        // it's an operator
-        val opType = takeBits(1).toInt(2)
-        val packets = mutableListOf<Packet>()
-        if (opType == 0) {
-            // length type operator
-            var dataLength = takeBits(15).toInt(2)
-            var dataBuffer = takeBits(dataLength)
-            while (dataLength > 0) {
-                val (p, remain) = parsePacket(dataBuffer)
-                packets.add(p)
-                dataLength -= (dataLength - remain.length)
-                dataBuffer = remain
-            }
-            return Pair(Operator(version, type, packets), data)
+        if (type == 4) {
+            // it's a literal
+            val sb = StringBuilder()
+            do {
+                val chunk = takeBits(5).apply {
+                    sb.append(this.substring(1))
+                }
+            } while (chunk[0] == '1')
+
+            return Literal(version, type, sb.toString().toLong(2))
         } else {
-            // num packets type operator
-            var packetCount = takeBits(11).toLong(2)
-            while (packetCount > 0) {
-                val (p, remain) = parsePacket(data)
-                packetCount--
-                packets.add(p)
-                data = remain
+            // it's an operator
+            val opType = takeBits(1).toInt(2)
+            val packets = mutableListOf<Packet>()
+            if (opType == 0) {
+                // length type operator
+                var dataLength = takeBits(15).toInt(2)
+                while (dataLength > 0) {
+                    val original = deque.size
+                    val p = parsePacket()
+                    packets.add(p)
+                    dataLength -= (original - deque.size)
+                }
+            } else {
+                // num packets type operator
+                var packetCount = takeBits(11).toLong(2)
+                while (packetCount > 0) {
+                    val p = parsePacket()
+                    packetCount--
+                    packets.add(p)
+                }
             }
-            return Pair(Operator(version, type, packets), data)
+            return Operator(version, type, packets)
         }
     }
-}
 
-fun Char.toBin(): String = Character.digit(this, 16).toString(2).padStart(4, '0')
-fun String.toBin(): String = this.map { it.toBin() }.joinToString("")
-fun String.parse(): Packet = parsePacket(this.toBin()).first
+    parsePacket()
+}
 
 fun main() {
     println(readText("/day16input.txt").parse().versionSum())
