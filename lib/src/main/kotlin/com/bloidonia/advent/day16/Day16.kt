@@ -27,26 +27,29 @@ class Operator(version: Int, type: Int, private val contents: List<Packet>) : Pa
 
 fun parsePacket(s: String): Pair<Packet, String> {
     var data = s
-    val version = data.take(3).toInt(2).apply { data = data.drop(3) }
-    val type = data.take(3).toInt(2).apply { data = data.drop(3) }
+    val takeBits = { n: Int -> data.take(n).apply { data = data.drop(n) } }
+
+    val version = takeBits(3).toInt(2)
+    val type = takeBits(3).toInt(2)
+
     if (type == 4) {
         // it's a literal
-        var more = true
         val sb = StringBuilder()
-        while (more) {
-            val chunk = data.take(5).apply { data = data.drop(5) }
-            more = chunk[0] == '1'
-            sb.append(chunk.substring(1))
-        }
+        do {
+            val chunk = takeBits(5).apply {
+                sb.append(this.substring(1))
+            }
+        } while (chunk[0] == '1')
+
         return Pair(Literal(version, type, sb.toString().toLong(2)), data)
     } else {
         // it's an operator
-        val opType = data.take(1).apply { data = data.drop(1) }
+        val opType = takeBits(1).toInt(2)
         val packets = mutableListOf<Packet>()
-        if (opType == "0") {
+        if (opType == 0) {
             // length type operator
-            var dataLength = data.take(15).toLong(2).apply { data = data.drop(15) }
-            var dataBuffer = data.take(dataLength.toInt()).apply { data = data.drop(dataLength.toInt()) }
+            var dataLength = takeBits(15).toInt(2)
+            var dataBuffer = takeBits(dataLength)
             while (dataLength > 0) {
                 val (p, remain) = parsePacket(dataBuffer)
                 packets.add(p)
@@ -56,7 +59,7 @@ fun parsePacket(s: String): Pair<Packet, String> {
             return Pair(Operator(version, type, packets), data)
         } else {
             // num packets type operator
-            var packetCount = data.take(11).toLong(2).apply { data = data.drop(11) }
+            var packetCount = takeBits(11).toLong(2)
             while (packetCount > 0) {
                 val (p, remain) = parsePacket(data)
                 packetCount--
