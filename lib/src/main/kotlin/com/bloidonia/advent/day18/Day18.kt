@@ -9,7 +9,7 @@ data class SnailFish(val values: List<Num>) {
     operator fun plus(other: SnailFish) =
         SnailFish(values.map { Num(it.n, it.level + 1) } + other.values.map { Num(it.n, it.level + 1) })
 
-    fun explode(): SnailFish? {
+    private fun explode(): SnailFish? {
         if (values.none { it.level > 4 }) return null
         val idx = values.indexOfFirst { it.level > 4 }
         val pair = values.subList(idx, idx + 2)
@@ -42,7 +42,7 @@ data class SnailFish(val values: List<Num>) {
         )
     }
 
-    fun magnitude(lhs: Num, rhs: Num) = Num((3 * lhs.n) + (2 * rhs.n), lhs.level - 1)
+    private fun magnitude(lhs: Num, rhs: Num) = Num((3 * lhs.n) + (2 * rhs.n), lhs.level - 1)
     fun magnitude(): Int {
         if (values.size == 1) {
             return values[0].n
@@ -50,7 +50,7 @@ data class SnailFish(val values: List<Num>) {
         val maxLevel = values.maxOf { it.level }
         val first = values.indexOfFirst { it.level == maxLevel }
         val newFish = SnailFish(values.take(first) + magnitude(values[first], values[first + 1]) + values.drop(first + 2))
-        return newFish.magnitude();
+        return newFish.magnitude()
     }
     fun reduce(): SnailFish {
         var data: SnailFish = this
@@ -60,9 +60,9 @@ data class SnailFish(val values: List<Num>) {
                 data = exploded
                 continue
             }
-            val splitted = data.split()
-            if (splitted != null) {
-                data = splitted
+            val split = data.split()
+            if (split != null) {
+                data = split
                 continue
             }
             break
