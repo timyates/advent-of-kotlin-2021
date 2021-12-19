@@ -3,41 +3,6 @@ package com.bloidonia.advent.day18
 import spock.lang.Specification
 
 class Day18Spec extends Specification {
-    def "example for part 1"() {
-        given:
-        def input = [
-                '[1,1]',
-                '[2,2]',
-                '[3,3]',
-                '[4,4]',
-                '[5,5]',
-        ].collect { num -> use(Day18Kt) { num.toSnailFish() } }
-
-        when:
-        def result = input.inject { acc, n -> (acc + n).reduce() }
-
-        then:
-        result.toString() == '3(4),0(4),5(4),3(4),4(3),4(3),5(2),5(2)'
-    }
-
-    def "another example for part 1"() {
-        given:
-        def input = [
-                '[1,1]',
-                '[2,2]',
-                '[3,3]',
-                '[4,4]',
-                '[5,5]',
-                '[6,6]',
-        ].collect { num -> use(Day18Kt) { num.toSnailFish() } }
-
-        when:
-        def result = input.inject { acc, n -> (acc + n).reduce() }
-
-        then:
-        result.toString() == '5(4),0(4),7(4),4(4),5(3),5(3),6(2),6(2)'
-    }
-
     def "quick sum check"() {
         given:
         def result = use(Day18Kt) {
@@ -120,35 +85,6 @@ class Day18Spec extends Specification {
 
         then:
         result == use(Day18Kt) { '[[[[5,0],[7,4]],[5,5]],[6,6]]'.toSnailFish() }
-    }
-
-    def "sum test"() {
-        given:
-        def input = [
-                '[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]',
-                '[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]',
-                '[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]',
-                '[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]',
-                '[7,[5,[[3,8],[1,4]]]]',
-                '[[2,[2,2]],[8,[8,1]]]',
-                '[2,9]',
-                '[1,[[[9,3],9],[[9,0],[0,7]]]]',
-                '[[[5,[7,4]],7],1]',
-                '[[[[4,2],2],6],[8,7]]',
-        ].collect { num -> use(Day18Kt) { num.toSnailFish() } }
-
-        when:
-        def result = input.drop(1).inject(input.take(1)) { acc, n ->
-            def sum = acc.last() + n
-            println "-----\n${acc.last()}\n   + $n\n$sum\n-----"
-            acc << sum.reduce()
-        }
-        result.each {
-            println it
-        }
-
-        then:
-        result.last().reduce().magnitude() == 4140
     }
 
     def "mag test"() {
